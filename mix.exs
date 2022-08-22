@@ -22,7 +22,7 @@ defmodule GrpcMox.MixProject do
   defp deps do
     [
       {:grpc, github: "elixir-grpc/grpc"},
-      {:protobuf, "~> 0.10"},
+      {:protobuf, "~> 0.6"},
       {:mox, "~> 1.0", only: :test}
 
       # {:dep_from_hexpm, "~> 0.3.0"},
