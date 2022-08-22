@@ -1,6 +1,4 @@
 defmodule GrpcMox do
-  import Mox
-
   @spec expect_grpc(module(), function(), Keyword.t()) :: :ok
   def expect_grpc(grpcClientMock, callback, opts \\ []) do
     case callback.() do
@@ -18,22 +16,22 @@ defmodule GrpcMox do
           response_mod: proto_response_mod
         }
 
-        expect(grpcClientMock, :connect, fn _, _ -> {:ok, grpc_channel} end)
-        expect(grpcClientMock, :send_request, fn _, _, _ -> stream end)
-        expect(grpcClientMock, :recv_headers, fn _, _, _ -> {:ok, [], :fin} end)
+        Mox.expect(grpcClientMock, :connect, fn _, _ -> {:ok, grpc_channel} end)
+        Mox.expect(grpcClientMock, :send_request, fn _, _encoded_request, _ -> stream end)
+        Mox.expect(grpcClientMock, :recv_headers, fn _, _, _ -> {:ok, [], :fin} end)
 
         {:ok, data, _} =
           proto_response_mod
           |> encode_proto(proto_response)
           |> GRPC.Message.to_data()
 
-        expect(grpcClientMock, :recv_data_or_trailers, fn _, _, _ -> {:data, data} end)
+        Mox.expect(grpcClientMock, :recv_data_or_trailers, fn _, _, _ -> {:data, data} end)
 
-        expect(grpcClientMock, :recv_data_or_trailers, fn _, _, _ ->
+        Mox.expect(grpcClientMock, :recv_data_or_trailers, fn _, _, _ ->
           {:trailers, %{"grpc-status" => grpc_status}}
         end)
 
-        expect(grpcClientMock, :disconnect, fn _ -> {:ok, grpc_channel} end)
+        Mox.expect(grpcClientMock, :disconnect, fn _ -> {:ok, grpc_channel} end)
 
       {:error, %GRPC.RPCError{} = rpc_error} ->
         grpc_channel = %GRPC.Channel{
@@ -44,11 +42,11 @@ defmodule GrpcMox do
           channel: grpc_channel
         }
 
-        expect(grpcClientMock, :connect, fn _, _ -> {:ok, grpc_channel} end)
-        expect(grpcClientMock, :send_request, fn _, _, _ -> stream end)
-        expect(grpcClientMock, :recv_headers, fn _, _, _ -> {:ok, [], :fin} end)
-        expect(grpcClientMock, :recv_data_or_trailers, fn _, _, _ -> {:error, rpc_error} end)
-        expect(grpcClientMock, :disconnect, fn _ -> {:ok, grpc_channel} end)
+        Mox.expect(grpcClientMock, :connect, fn _, _ -> {:ok, grpc_channel} end)
+        Mox.expect(grpcClientMock, :send_request, fn _, _encoded_request, _ -> stream end)
+        Mox.expect(grpcClientMock, :recv_headers, fn _, _, _ -> {:ok, [], :fin} end)
+        Mox.expect(grpcClientMock, :recv_data_or_trailers, fn _, _, _ -> {:error, rpc_error} end)
+        Mox.expect(grpcClientMock, :disconnect, fn _ -> {:ok, grpc_channel} end)
     end
 
     :ok
