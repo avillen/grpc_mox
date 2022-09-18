@@ -29,7 +29,7 @@ defmodule GrpcMoxTest do
 
   Mox.defmock(GRPCClientMock, for: GRPC.Client.Adapter)
 
-  describe "expect/3" do
+  describe "expect_grpc/4" do
     test "on success" do
       req = Helloworld.HelloRequest.new(name: "Álvaro")
       res = Helloworld.HelloResponse.new(message: "Hola")
