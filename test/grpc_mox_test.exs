@@ -34,7 +34,7 @@ defmodule GrpcMoxTest do
       req = Helloworld.HelloRequest.new(name: "Álvaro")
       res = Helloworld.HelloResponse.new(message: "Hola")
 
-      GrpcMox.expect_grpc(GRPCClientMock, fn -> {:ok, res} end)
+      GrpcMox.expect_grpc(GRPCClientMock, req, res)
 
       {:ok, conn} = GRPC.Stub.connect("localhost:0", adapter: GRPCClientMock)
 
@@ -47,7 +47,7 @@ defmodule GrpcMoxTest do
       req = Helloworld.HelloRequest.new(name: "Álvaro")
       res = %GRPC.RPCError{status: 3, message: "Hola"}
 
-      GrpcMox.expect_grpc(GRPCClientMock, fn -> {:error, res} end)
+      GrpcMox.expect_grpc(GRPCClientMock, req, res)
 
       {:ok, conn} = GRPC.Stub.connect("localhost:0", adapter: GRPCClientMock)
 
